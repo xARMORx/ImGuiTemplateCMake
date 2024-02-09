@@ -1,0 +1,12 @@
+[submodule "imgui"]
+	path = imgui
+	url = https://github.com/ocornut/imgui/
+[submodule "kthook"]
+	path = kthook
+	url = https://github.com/KiN4StAt/kthook
+[submodule "xbyak"]
+	path = xbyak
+	url = https://github.com/herumi/xbyak/
+[submodule "ktsignal"]
+	path = ktsignal
+	url = https://github.com/KiN4StAt/ktsignal
