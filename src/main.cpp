@@ -26,7 +26,7 @@ HRESULT WndProc(const decltype(WndProcHook)& hook, HWND hwnd, UINT uMsg, WPARAM 
         if (wParam == VK_F9)
             ImGuiEnable = { !ImGuiEnable };
     }
-
+    
     if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) {
         return 1;
     }
@@ -69,7 +69,7 @@ std::optional<HRESULT> D3D9Present(const decltype(PresentHook)& hook, IDirect3DD
         ImGui::InputText(u8"Инпут", ImGuiInputBuffer, sizeof(ImGuiInputBuffer));
 
         if (ImGui::Button(u8"Нажми чтобы вывести текст на экран!")) {
-            MessageBoxA(**reinterpret_cast<HWND**>(0xC17054), ImGuiInputBuffer, "", MB_OK);
+            MessageBoxA(**reinterpret_cast<HWND**>(0xC17054), ImGuiInputBuffer, "ImGuiTemplate", MB_OK);
         }
 
         ImGui::End();
@@ -81,13 +81,12 @@ std::optional<HRESULT> D3D9Present(const decltype(PresentHook)& hook, IDirect3DD
     return std::nullopt;
 }
 
-std::optional<HRESULT> D3D9Lost(const decltype(ResetHook)& hook, LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentParams) {
+std::optional<HRESULT> D3D9Lost(const decltype(ResetHook)& hook, IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentParams) {
     ImGui_ImplDX9_InvalidateDeviceObjects();
     return std::nullopt;
 }
 
-void D3D9Reset(const decltype(ResetHook)& hook, HRESULT& return_value, IDirect3DDevice9* device_ptr, D3DPRESENT_PARAMETERS* parameters) {
-    ImGui_ImplDX9_InvalidateDeviceObjects();
+void D3D9Reset(const decltype(ResetHook)& hook, HRESULT& return_value, IDirect3DDevice9* pDevice, D3DPRESENT_PARAMETERS* pPresentParams) {
 }
 
 void setD3D9Hooks() {
@@ -123,6 +122,10 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
         CTimerHook.install();
         break;
     case DLL_PROCESS_DETACH:
+        WndProcHook.remove();
+        ResetHook.remove();
+        PresentHook.remove();
+        CTimerHook.remove();
         break;
     }
     return TRUE;
